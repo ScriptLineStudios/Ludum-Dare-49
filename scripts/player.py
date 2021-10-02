@@ -30,7 +30,7 @@ class Player():
             elif self.addAng < 0:
                 self.addAng += 0.5
 
-        self.angle = math.degrees(math.atan2(self.rect.topleft[0]-mp[0],self.rect.topleft[1]-mp[1]))
+        self.angle = math.degrees(math.atan2(self.rect.center[0]-mp[0],self.rect.center[1]-mp[1]))
         if self.addTimer > 0:
             self.addTimer -= 1
             if self.add == False:
