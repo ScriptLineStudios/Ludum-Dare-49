@@ -37,11 +37,13 @@ class Player():
                 self.addAng += 1
             else:
                 self.addAng -= 1
+
         self.angle += self.addAng
         self.addX = math.cos(math.radians(self.angle+90))*5
         self.pos[0] += self.addX
         self.rect = self.image.get_rect()
         self.rect.topleft = self.pos
+
 
         display.blit(pygame.transform.rotate(self.image,self.angle),self.pos)
 
