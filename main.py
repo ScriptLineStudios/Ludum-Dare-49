@@ -24,6 +24,7 @@ def generate_terrain():
         y += 200
 
 scroll_y = 2
+time_until_next_generation = 0
 
 while True:
     display.fill((255,255,255))
