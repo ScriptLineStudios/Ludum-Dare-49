@@ -1,5 +1,5 @@
 import pygame, math
-
+import random as rd
 class Player():
     def __init__(self,pos,xVelocity):
         self.pos = pos
@@ -11,15 +11,38 @@ class Player():
         self.trail = []
 
         self.image = pygame.image.load('assets/player.png')
+        self.rect = self.image.get_rect()
+        self.rect.topleft = self.pos
+
+        self.addAng = 0
+        self.addTimer = 0
+        self.add = False
 
     def draw(self,display,mp):
-        self.angle = math.atan2(self.pos[0]-mp[0],self.pos[1]-mp[1])        
-        self.multiplyX = self.angle
-        self.addX = math.cos(math.radians(self.angle))*self.multiplyX
+        if rd.randint(0,100) == 10:
+            self.addTimer = 30
+            self.add = rd.choice([False,True])
 
-        self.pos[0] += self.addX
         
-        display.blit(pygame.transform.rotate(self.image,math.degrees(self.angle)),self.pos)
+        if self.addTimer <= 0:
+            if self.addAng > 0:
+                self.addAng -= 0.5
+            elif self.addAng < 0:
+                self.addAng += 0.5
+
+        self.angle = math.degrees(math.atan2(self.rect.topleft[0]-mp[0],self.rect.topleft[1]-mp[1]))
+        if self.addTimer > 0:
+            self.addTimer -= 1
+            if self.add == False:
+                self.addAng += 1
+            else:
+                self.addAng -= 1
+        self.angle += self.addAng
+        self.addX = math.cos(math.radians(self.angle+90))*5
+        self.pos[0] += self.addX
+        self.rect.topleft = self.pos
+        
+        display.blit(pygame.transform.rotate(self.image,self.angle),self.pos)
 
 class trail():
     def __init__(self,liveTime,color):
