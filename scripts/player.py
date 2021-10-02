@@ -23,7 +23,7 @@ class Player():
             self.addTimer = 30
             self.add = rd.choice([False,True])
 
-        
+
         if self.addTimer <= 0:
             if self.addAng > 0:
                 self.addAng -= 0.5
@@ -40,8 +40,9 @@ class Player():
         self.angle += self.addAng
         self.addX = math.cos(math.radians(self.angle+90))*5
         self.pos[0] += self.addX
+        self.rect = self.image.get_rect()
         self.rect.topleft = self.pos
-        
+
         display.blit(pygame.transform.rotate(self.image,self.angle),self.pos)
 
 class trail():
