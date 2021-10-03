@@ -20,14 +20,14 @@ display = pygame.Surface((700/2,800/2))
 pygame.display.set_caption(CAPTION)
 
 tree_imgs = [
-    pygame.image.load("assets/tree1.png"),
-    pygame.image.load("assets/tree2.png"),
-    pygame.image.load("assets/tree3.png"),
-    pygame.image.load("assets/tree4.png")
+    pygame.image.load("assets/tree1.png").convert(),
     ]
-shadow_img = pygame.image.load("assets/shadow.png")
+tree_imgs[0].set_colorkey((0,0,0))
+shadow_img = pygame.image.load("assets/shadow.png").convert()
+shadow_img.set_colorkey((0,0,0))
 shadow_img.set_alpha(100)
-rock_img = pygame.image.load("assets/rock.png")
+rock_img = pygame.image.load("assets/rock.png").convert()
+rock_img.set_colorkey((0,0,0))
 
 clock = pygame.time.Clock()
 
@@ -54,31 +54,25 @@ pygame.mixer.music.play(-1)
 distance = 0
 
 difficulty_index = 0
-difficulty_levels = [2, 2, 3, 3, 4, 4, 5, 5]
-difficulty_changes = [500, 1000, 1500, 2000, 2500]
+difficulty_levels = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+difficulty_changes = [1000, 1000, 1500, 2000, 2500]
 
 def generate_terrain():
     global y
-    prev_x = 0
-    prev_y = 0
-    for x in range(1):
-        x = random.randrange(150, 175)
-        points.append([x, y])
-        '''for _ in range(100):
-            rand_x = random.randrange(-25, 25)
-            rand_y = random.randrange(-800, 800)
-            decorations.append([x+rand_x, y+rand_y])'''
-
-        for _ in range(difficulty_levels[difficulty_index]):
-            rand_x = random.randrange(-300, 300)
-            rand_y = random.randrange(-200,200)
+    lifetime = y
+    x = random.randrange(150, 175)
+    points.append([x, 600, lifetime])
 
 
-            img = random.choice([tree_imgs[0], rock_img])
+    for _ in range(difficulty_levels[difficulty_index]):
+        rand_x = random.randrange(-300, 300)
+        rand_y = random.randrange(-200,200)
 
-            obstacle_rects.append(pygame.Rect(x+rand_x+5+img.get_width()/2, (y+rand_y+img.get_height()*4)-img.get_height()/2, img.get_width(), img.get_height()))
-            obstacles.append(Obstacle([x-8+rand_x, y+rand_y],img, 4))
-        y += 100
+
+        img = random.choice([tree_imgs[0], rock_img])
+
+        obstacle_rects.append(pygame.Rect(x+rand_x+5+img.get_width()/2, (600+rand_y+img.get_height()*4)-img.get_height()/2, img.get_width(), img.get_height()))
+        obstacles.append(Obstacle([x-8+rand_x, 600+rand_y],img, 4))
 
 '''pLeft = []
 pRight = []
@@ -110,15 +104,15 @@ while True:
     display.fill((246,246,246))
     if time_until_next_generation == 0:
         generate_terrain()
-
         time_until_next_generation = 25
     else:
         time_until_next_generation -= 1
 
+
+
     mx, my = pygame.mouse.get_pos()
     mp = (mx/2, my/2)
 
-    print(len(points))
 
     if distance in difficulty_changes:
         difficulty_index += 1
@@ -126,23 +120,18 @@ while True:
 
     #restart_button.draw(display, mp)
 
-    for point in decorations:
-        point[1] -= scroll_y
-        if point[1] < -100:
-            decorations.remove(point)
-        pygame.draw.rect(display, (196,233,242), (point[0], point[1], 4,4))
-
-
-
 
     for index, point in enumerate(points):
-        if points[index][1] > -200:
-            points[index][1] -= scroll_y
-            if index != len(points)-1:
-                pygame.draw.line(display, (196,233,242), (points[index][0]+8, points[index][1]+8), (points[index+1][0]+8, points[index+1][1]+8), width=50)
+        if point[1] > -200:
+            point[1] -= scroll_y
+            try:
+                pygame.draw.line(display, (196,233,242), (point[0]+8, point[1]+8), (points[index+1][0]+8, points[index+1][1]+8), width=50)
+            except:
+                pass
             #pygame.draw.rect(display, (0,0,0), (point[0], point[1], 16, 16))
         else:
             points.remove(point)
+
 
 
     '''pLeft = [[0,WINDOW_SIZE[1]],[0,0]]
@@ -157,17 +146,16 @@ while True:
 
     player.draw(display,mp,game_over)
 
-    framework.render_text(display, fps, font, True, (0,0,0), (50,75))
+    print(len(obstacles))
 
     for index, obstacle in enumerate(obstacles):
-        if obstacle.pos[1] < -100:
+        if obstacle.lifetime <= 0:
             obstacles.remove(obstacle)
             obstacle_rects.remove(obstacle_rects[index])
 
         display.blit(shadow_img, (obstacle.pos[0]+obstacle.image.get_width(), obstacle.pos[1]+obstacle.image.get_height()*4-20))
         obstacle.draw(display)
     for rect in obstacle_rects:
-
         rect[1] -= scroll_y
         if rect.colliderect(pygame.Rect(player.rect.x+20, player.rect.y+32, player.rect.width/4, player.rect.height/4)):
             game_over = True
@@ -197,7 +185,7 @@ while True:
                     distance = 0
                     player.pos = [WINDOW_SIZE[0]//4,50]
                     game_over = False
-
+    framework.render_text(display, fps, font, True, (0,0,0), (50,75))
     clock.tick(FPS)
     screen.blit(pygame.transform.scale(display,WINDOW_SIZE),(0,0))
     pygame.display.update()

@@ -47,7 +47,7 @@ class Particle:
         self.gravity = 1
         self.radius = radius
         self.color = color
-        self.lifetime = random.randrange(15, 20)
+        self.lifetime = 200
         self.gravity_scale = gravity_scale
 
     def draw(self, display):
@@ -65,7 +65,10 @@ def particle_burst():
 
 def handle_particles(display):
     for particle in particles:
-        particle.draw(display)
+        if particle.lifetime > 0:
+            particle.draw(display)
+        else:
+            particles.remove(particle)
 
 def animate(image_list, animation_index, time_to_show_image_on_screen):
     if animation_index+1 >= len(image_list)*time_to_show_image_on_screen:
