@@ -18,7 +18,12 @@ CAPTION = "Unstable Steep"
 display = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption(CAPTION)
 
-tree_img = pygame.image.load("assets/tree.png")
+tree_imgs = [
+    pygame.image.load("assets/tree1.png"),
+    pygame.image.load("assets/tree2.png"),
+    pygame.image.load("assets/tree3.png"),
+    pygame.image.load("assets/tree4.png")
+    ]
 shadow_img = pygame.image.load("assets/shadow.png")
 rock_img = pygame.image.load("assets/rock.png")
 
@@ -55,7 +60,7 @@ def generate_terrain():
             rand_x = random.randrange(-300, 300)
             rand_y = random.randrange(-200,200)
 
-            img = random.choice([tree_img, rock_img, tree_img])
+            img = random.choice([tree_imgs[0],tree_imgs[1],tree_imgs[2],tree_imgs[3], rock_img])
             obstacle_rects.append(pygame.Rect(x-20+rand_x+img.get_width()/2, y+rand_y+img.get_height()-40, 32, 40))
             obstacles.append(Obstacle([x-8+rand_x, y+rand_y],img, 4))
         y += 400
