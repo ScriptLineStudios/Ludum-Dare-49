@@ -7,19 +7,12 @@ class Obstacle():
 
         self.downSpeed = downSpeed
 
-        #self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect()
+
+        self.lifetime = 500
 
     def draw(self,display):
-        display.blit(self.image,(self.pos[0], self.pos[1]))
+    
+        display.blit(pygame.transform.scale(self.image, (self.image.get_width()*4, self.image.get_height()*4)),(self.pos[0], self.pos[1]))
         self.pos[1] -= self.downSpeed
-
-class YAwareGroup(pygame.sprite.Group):
-    def by_y(self, spr):
-        return spr.pos.y
-
-    def draw(self, surface):
-        sprites = self.sprites()
-        surface_blit = surface.blit
-        for spr in sorted(sprites, key=self.by_y):
-            self.spritedict[spr] = surface_blit(spr.image, spr.rect)
-        self.lostsprites = []
+        self.rect.topleft = self.pos

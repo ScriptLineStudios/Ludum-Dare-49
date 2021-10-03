@@ -67,7 +67,7 @@ class settings():
 class Credits():
     def __init__(self):
         pass
-    
+
 def hello():
     print('hello')
 
@@ -82,7 +82,7 @@ class main_menu():
     def __init__(self):#235,57,120  235,222,80 33,194,235
         self.BackGround = pygame.image.load('menu_test.png').convert()
         self.opened = True
-        
+
         self.settingsMenu = settings()
         self.credits = Credits()
 
@@ -90,7 +90,7 @@ class main_menu():
         self.minusSpeed = 5
 
         font80 = load_font(None,80)
-        
+
         self.buttons = [
             button([25,250],font80,'Play',(33,194,235),self.openFunc),
             button([25,350],font80,'Settings',(30,132,158),hello),

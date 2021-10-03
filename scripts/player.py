@@ -40,44 +40,52 @@ class Player():
         self.addTimer = 0
         self.add = False
 
-    def draw(self,display,mp):
-        #movement#
-        if rd.randint(0,100) == 10:
-            self.addTimer = 30
-            self.add = rd.choice([False,True])
+    def draw(self,display,mp, game_over):
+        if not game_over:
+            #movement#
+            if rd.randint(0,100) == 10:
+                self.addTimer = 30
+                self.add = rd.choice([False,True])
 
-        if self.addTimer <= 0:
-            if self.addAng > 0:
-                self.addAng -= 0.5
-            elif self.addAng < 0:
-                self.addAng += 0.5
+            if self.addTimer <= 0:
+                if self.addAng > 0:
+                    self.addAng -= 0.5
+                elif self.addAng < 0:
+                    self.addAng += 0.5
 
-        self.angle = math.degrees(math.atan2(self.rect.center[0]-mp[0],self.rect.center[1]-mp[1]))
-        if self.addTimer > 0:
-            self.addTimer -= 1
-            if self.add == False:
-                self.addAng += 1
+            self.angle = math.degrees(math.atan2(self.rect.center[0]-mp[0],self.rect.center[1]-mp[1]))
+            if self.addTimer > 0:
+                self.addTimer -= 1
+                if self.add == False:
+                    self.addAng += 1
+                else:
+                    self.addAng -= 1
+            #movement#
+            self.angle += self.addAng
+            self.addX = math.cos(math.radians(self.angle+90))*5
+
+
+            self.pos[0] += self.addX
+
+            #addTrail#
+            if self.addTrailTimer >= 6:
+                self.trl.poses.append([[self.rect.center[0]-math.cos(math.radians(self.angle-90))*30+math.cos(math.radians(self.angle))*9,self.rect.center[1]+math.sin(math.radians(self.angle-90))*30],[self.rect.center[0]-math.cos(math.radians(self.angle-90))*30-math.cos(math.radians(self.angle))*9,self.rect.center[1]+math.sin(math.radians(self.angle-90))*30]])
+
+                self.addTrailTimer = 0
             else:
-                self.addAng -= 1
-        #movement#
-        self.angle += self.addAng
-        self.addX = math.cos(math.radians(self.angle+90))*5
-        self.pos[0] += self.addX
+                self.addTrailTimer += 1
 
-        #addTrail#
-        if self.addTrailTimer >= 6:
-            self.trl.poses.append([[self.rect.center[0]-math.cos(math.radians(self.angle-90))*30+math.cos(math.radians(self.angle))*9,self.rect.center[1]+math.sin(math.radians(self.angle-90))*30],[self.rect.center[0]-math.cos(math.radians(self.angle-90))*30-math.cos(math.radians(self.angle))*9,self.rect.center[1]+math.sin(math.radians(self.angle-90))*30]])
+            #print(mp[0], self.pos[0])
+            self.trl.draw(display)
+            '''if mp[0] > self.pos[0]:
+                self.image = pygame.transform.scale(self.image, (64,64))
+            elif mp[0] < self.pos[0]:
+                self.image = pygame.transform.scale(pygame.transform.flip(self.image, True, False), (64,64))'''
+            transformedImg = pygame.transform.rotate(pygame.transform.scale(self.image, (64,64)),self.angle)
+            self.rect = transformedImg.get_rect()
+            self.rect.topleft = self.pos
 
-            self.addTrailTimer = 0
-        else:
-            self.addTrailTimer += 1
-
-        self.trl.draw(display)
-        transformedImg = pygame.transform.rotate(self.image,self.angle)
-        self.rect = transformedImg.get_rect()
-        self.rect.topleft = self.pos
-        
-        display.blit(transformedImg,self.pos)
+            display.blit(transformedImg,self.pos)
 
         #pygame.draw.circle(display,(255,0,0),[self.rect.center[0]-math.cos(math.radians(self.angle-90))*30+math.cos(math.radians(self.angle))*7,self.rect.center[1]+math.sin(math.radians(self.angle-90))*30],radius=3)
         #pygame.draw.circle(display,(255,0,0),[self.rect.center[0]-math.cos(math.radians(self.angle-90))*30-math.cos(math.radians(self.angle))*7,self.rect.center[1]+math.sin(math.radians(self.angle-90))*30],radius=3)

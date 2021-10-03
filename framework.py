@@ -55,14 +55,13 @@ class Particle:
         self.gravity -= self.gravity_scale
         self.x += self.x_vel
         self.y += self.y_vel * self.gravity
-        self.radius -= 0.1
+        self.radius -= 0.01
 
         pygame.draw.rect(display, self.color, (int(self.x), int(self.y), self.radius, self.radius))
 
 def particle_burst():
-    mouse_x, mouse_y = pygame.mouse.get_pos()
-    for x in range(100):
-        particles.append(Particle(mouse_x, mouse_y, random.randrange(-10, 10), random.randrange(-10, 0), 4, (163, 167, 194), 0))
+    for x in range(1):
+        particles.append(Particle(random.randrange(0, 400), -15, random.randrange(-1, 1), -0.05, 4, (163, 167, 194), 1))
 
 def handle_particles(display):
     for particle in particles:
