@@ -53,9 +53,14 @@ def generate_terrain():
     global y
     prev_x = 0
     prev_y = 0
-    for x in range(10):
+    for x in range(8):
         x = random.randrange(250, 350)
         points.append([x, y])
+        for _ in range(100):
+            rand_x = random.randrange(-50,50)
+            rand_y = random.randrange(-600, 600)
+            decorations.append([x+rand_x, y+rand_y])
+
         for _ in range(5):
             rand_x = random.randrange(-300, 300)
             rand_y = random.randrange(-200,200)
@@ -65,11 +70,11 @@ def generate_terrain():
             obstacles.append(Obstacle([x-8+rand_x, y+rand_y],img, 4))
         y += 400
 
-pLeft = []
+'''pLeft = []
 pRight = []
 for point in points:
     pLeft.append([point[0]-500,point[1]])
-    pRight.append([point[0]+500,point[1]])
+    pRight.append([point[0]+500,point[1]])'''
 
 
 scroll_y = 4
@@ -84,20 +89,29 @@ while True:
         player.addTimer = 60
     else:
         player.addTimer = 30'''
+    fps = str(int(clock.get_fps()))
+
     if distance_timer == 0 and not game_over:
         distance += 1
-        distance_timer = 60
+        distance_timer = 1
     else:
         distance_timer -= 1
     display.fill((246,246,246))
     if time_until_next_generation == 0:
+        points = []
         generate_terrain()
+
         time_until_next_generation = 160
     else:
         time_until_next_generation -= 1
 
-
     mp = pygame.mouse.get_pos()
+
+    for point in decorations:
+        point[1] -= scroll_y
+        if point[1] < -200:
+            decorations.remove(point)
+        pygame.draw.rect(display, (196,233,242), (point[0], point[1], 8,8))
 
 
 
@@ -112,23 +126,26 @@ while True:
             points.remove(point)
 
 
-    pLeft = [[0,WINDOW_SIZE[1]],[0,0]]
+    '''pLeft = [[0,WINDOW_SIZE[1]],[0,0]]
     pRight = [[WINDOW_SIZE[0],WINDOW_SIZE[1]],[WINDOW_SIZE[0],0]]
     for point in points:
         pLeft.append([point[0]-250,point[1]])
-        
     for point in points:
         pRight.append([point[0]+250,point[1]])
 
     pygame.draw.polygon(display,(196,233,242),pLeft)
-    pygame.draw.polygon(display,(196,233,242),pRight)
+    pygame.draw.polygon(display,(196,233,242),pRight)'''
 
     player.draw(display,mp)
+
+    framework.render_text(display, fps, font, True, (0,0,0), (50,75))
 
     #pygame.draw.rect(display, (0,0,0), pygame.Rect(player.rect.x+10, player.rect.y+10, player.rect.width-20, player.rect.height-20), 1)
 
 
     for obstacle in obstacles:
+        if obstacle.pos[1] < -200:
+            obstacles.remove(obstacle)
         display.blit(shadow_img, (obstacle.pos[0]+obstacle.image.get_width()/2-30, obstacle.pos[1]+obstacle.image.get_height()-55))
         obstacle.draw(display)
     for rect in obstacle_rects:
