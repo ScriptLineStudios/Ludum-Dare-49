@@ -6,7 +6,7 @@ pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.mixer.init()
 import framework
 import sys
-#import noise
+from scripts.menu import *
 import math
 import random
 
@@ -136,10 +136,6 @@ while True:
     mx, my = pygame.mouse.get_pos()
     mp = (mx/2, my/2)
 
-
-
-
-
     #restart_button.draw(display, mp)
 
 
@@ -172,7 +168,10 @@ while True:
     for index, obstacle in enumerate(obstacles):
         if obstacle.lifetime <= 0:
             obstacles.remove(obstacle)
-            obstacle_rects.remove(obstacle_rects[index])
+            try:
+                obstacle_rects.remove(obstacle_rects[index])
+            except:
+                pass
 
         display.blit(shadow_img, (obstacle.pos[0]+obstacle.image.get_width(), obstacle.pos[1]+obstacle.image.get_height()*4-20))
         obstacle.draw(display)
@@ -196,8 +195,13 @@ while True:
     framework.handle_particles(display)
 
     for deer in deers:
-        #pygame.draw.rect(display, (0,0,0), deer.rect, 1)
         deer.draw(display)
+        if deer.rect.colliderect(pygame.Rect(player.rect.x+20, player.rect.y+32, player.rect.width/4, player.rect.height/4)):
+            death_sound_effect.play()
+            obstacle_rects = []
+            deers = []
+            game_over = True
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -218,7 +222,7 @@ while True:
                     distance = 0
                     player.pos = [WINDOW_SIZE[0]//4,50]
                     game_over = False
-    framework.render_text(display, fps, font, True, (0,0,0), (50,75))
+    #framework.render_text(display, fps, font, True, (0,0,0), (50,75))
     clock.tick(FPS)
     screen.blit(pygame.transform.scale(display,WINDOW_SIZE),(0,0))
     pygame.display.update()

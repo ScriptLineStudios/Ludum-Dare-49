@@ -4,12 +4,17 @@ pygame.init()
 
 SCRSIZE = (600, 700)
 FPS = 60
-CAPTION = "Drunk skier"
+CAPTION = "Unstable Steep"
 
 display = pygame.display.set_mode((600,700))
 pygame.display.set_caption(CAPTION)
 
 clock = pygame.time.Clock()
+
+in_menu = True
+
+pygame.mixer.music.load("assets/Menu.mp3")
+pygame.mixer.music.play(-1)
 
 class button():
     def __init__(self,pos,font,text,color,function):
@@ -80,7 +85,7 @@ def load_font(font_name, font_size):#borrowed from framework;)
 
 class main_menu():
     def __init__(self):#235,57,120  235,222,80 33,194,235
-        self.BackGround = pygame.image.load('menu_test.png').convert()
+        self.BackGround = pygame.image.load('scripts/menu_test.png').convert()
         self.opened = True
 
         self.settingsMenu = settings()
@@ -89,7 +94,9 @@ class main_menu():
         self.CircleRadius = 350
         self.minusSpeed = 5
 
-        font80 = load_font(None,80)
+        font80 = load_font("assets/dpcomic.ttf",80)
+
+        self.in_menu = True
 
         self.buttons = [
             button([25,250],font80,'Play',(33,194,235),self.openFunc),
@@ -113,9 +120,9 @@ class main_menu():
                 button.start_func()
 
     def openFunc(self):
-        self.opened = False
+        self.in_menu = False
 menu = main_menu()
-while True:
+while menu.in_menu:
     display.fill((255,255,255))
 
     mp = pygame.mouse.get_pos()

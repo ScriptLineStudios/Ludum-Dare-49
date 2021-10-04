@@ -34,7 +34,7 @@ class Deer:
         self.rect = None
 
     def draw(self, display):
-        self.rect = (self.x, self.y, self.images[self.animation_index//15].get_width()*4, self.images[self.animation_index//15].get_height()*4)
+        self.rect = pygame.Rect(self.x, self.y+64, self.images[self.animation_index//15].get_width()*4, self.images[self.animation_index//15].get_height())
         self.animation_index = framework.animate(self.images, self.animation_index, 15)
         if self.dir == -4:
             display.blit(pygame.transform.scale(self.images[self.animation_index//15], (self.images[self.animation_index//15].get_width()*4, self.images[self.animation_index//15].get_height()*4)),(self.x, self.y))
