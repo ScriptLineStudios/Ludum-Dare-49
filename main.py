@@ -1,7 +1,9 @@
 import pygame
 from pygame.locals import *
 from scripts.player import Player
-from scripts.props import Obstacle
+from scripts.props import Obstacle, Deer
+pygame.mixer.pre_init(44100, -16, 1, 512)
+pygame.mixer.init()
 import framework
 import sys
 #import noise
@@ -51,11 +53,17 @@ font = framework.load_font("assets/dpcomic.ttf", 32)
 pygame.mixer.music.load("assets/Gameplay.ogg")
 pygame.mixer.music.play(-1)
 
+snow_sound_effects = [pygame.mixer.Sound("assets/snow1.ogg"), pygame.mixer.Sound("assets/snow2.ogg"), pygame.mixer.Sound("assets/sound3.ogg")]
+death_sound_effect = pygame.mixer.Sound("assets/death.wav")
+for sound in snow_sound_effects:
+    sound.set_volume(0.2)
+snow_cooldown_timer = 0
+
 distance = 0
 
 difficulty_index = 0
-difficulty_levels = [1, 1, 1, 1, 1, 1, 1, 1, 1]
-difficulty_changes = [1000, 1000, 1500, 2000, 2500]
+difficulty_levels = [1, 2, 3, 4, 5]
+difficulty_changes = [100, 200, 300, 400, 500]
 
 def generate_terrain():
     global y
@@ -63,7 +71,10 @@ def generate_terrain():
     x = random.randrange(150, 175)
     points.append([x, 600, lifetime])
 
-
+    random_ = random.randrange(0, 15)
+    if random_ == 0:
+        deers.append(Deer(random.choice([700, -300]), random.choice([700,600,500]), 4))
+    #print(difficulty_levels[difficulty_index])
     for _ in range(difficulty_levels[difficulty_index]):
         rand_x = random.randrange(-300, 300)
         rand_y = random.randrange(-200,200)
@@ -86,6 +97,8 @@ time_until_next_generation = 0
 distance_timer = 0
 game_over = False
 
+deers = []
+
 
 while True:
     '''if player.rect.x-300 > 60: ---> This was going to be the code for making the player wobble more as you more further out
@@ -96,9 +109,19 @@ while True:
         player.addTimer = 30'''
     fps = str(int(clock.get_fps()))
 
+    if snow_cooldown_timer <= 0:
+        sound = random.choice(snow_sound_effects)
+        sound.play()
+        snow_cooldown_timer = random.randrange(50, 100)
+    else:
+        snow_cooldown_timer -= 1
+
+
     if distance_timer == 0 and not game_over:
         distance += 1
-        distance_timer = 1
+        distance_timer = 10
+        if distance in difficulty_changes:
+            difficulty_index += 1
     else:
         distance_timer -= 1
     display.fill((246,246,246))
@@ -114,8 +137,7 @@ while True:
     mp = (mx/2, my/2)
 
 
-    if distance in difficulty_changes:
-        difficulty_index += 1
+
 
 
     #restart_button.draw(display, mp)
@@ -146,7 +168,6 @@ while True:
 
     player.draw(display,mp,game_over)
 
-    print(len(obstacles))
 
     for index, obstacle in enumerate(obstacles):
         if obstacle.lifetime <= 0:
@@ -158,6 +179,8 @@ while True:
     for rect in obstacle_rects:
         rect[1] -= scroll_y
         if rect.colliderect(pygame.Rect(player.rect.x+20, player.rect.y+32, player.rect.width/4, player.rect.height/4)):
+            death_sound_effect.play()
+            obstacle_rects = []
             game_over = True
 
     framework.particle_burst()
@@ -172,6 +195,10 @@ while True:
 
     framework.handle_particles(display)
 
+    for deer in deers:
+        #pygame.draw.rect(display, (0,0,0), deer.rect, 1)
+        deer.draw(display)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -180,6 +207,12 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_e:
                 if game_over:
+                    pygame.mixer.music.unload()
+                    pygame.mixer.music.load("assets/Gameplay.ogg")
+                    pygame.mixer.music.play(-1)
+                    points = []
+                    obstacles = []
+                    obstacle_rects = []
                     difficulty_index = 0
                     distance_timer = 0
                     distance = 0
