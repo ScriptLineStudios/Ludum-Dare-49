@@ -165,6 +165,13 @@ while True:
     player.draw(display,mp,game_over)
 
 
+    for deer in deers:
+        deer.draw(display)
+        if deer.rect.colliderect(pygame.Rect(player.rect.x+20, player.rect.y+32, player.rect.width/4, player.rect.height/4)):
+            death_sound_effect.play()
+            obstacle_rects = []
+            deers = []
+            game_over = True
     for index, obstacle in enumerate(obstacles):
         if obstacle.lifetime <= 0:
             obstacles.remove(obstacle)
@@ -194,13 +201,6 @@ while True:
 
     framework.handle_particles(display)
 
-    for deer in deers:
-        deer.draw(display)
-        if deer.rect.colliderect(pygame.Rect(player.rect.x+20, player.rect.y+32, player.rect.width/4, player.rect.height/4)):
-            death_sound_effect.play()
-            obstacle_rects = []
-            deers = []
-            game_over = True
 
 
     for event in pygame.event.get():
